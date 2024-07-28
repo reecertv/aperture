@@ -15,6 +15,8 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ component: Component, ...re
 
     const { authToken } = authContext;
 
+    console.log(authToken);
+
     return (
         <Route
             {...rest}

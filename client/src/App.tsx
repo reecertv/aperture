@@ -51,7 +51,7 @@ const App: React.FC = () => (
           <Route exact path="/">
             <Redirect to="/login" />
           </Route>
-          <PrivateRoute path="/upload" component={Home} />
+          <PrivateRoute path="/upload" component={Home} exact />
         </IonRouterOutlet>
       </AuthProvider>
     </IonReactRouter>

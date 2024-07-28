@@ -2,12 +2,25 @@ import { IonButton, IonCol, IonContent, IonFabButton, IonGrid, IonHeader, IonIco
 import ExploreContainer from '../components/ExploreContainer';
 import { add, colorPalette, document, globe } from 'ionicons/icons';
 import './Home.css';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { uploadFiles } from '../utils/uploadFiles';
+import { AuthContext } from '../providers/AuthProvider';
+import { useHistory } from 'react-router';
 
 const Home: React.FC = () => {
+  const authContext = useContext(AuthContext);
+  const history = useHistory();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  if (!authContext) {
+    return null; // Or render some error UI
+  }
+
+  if (authContext.authToken == null) {
+    history.push('/login');
+    return null;
+  }
 
   const handleAddButtonClick = () => {
     if (fileInputRef.current) {
@@ -16,12 +29,9 @@ const Home: React.FC = () => {
   };
 
   const handleUploadButtonClick = async () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
 
-    const message = await uploadFiles(selectedFiles, '', '');
-    //setToastMessage(message);
+    const message = await uploadFiles(selectedFiles, authContext.authToken as string);
+    console.log(message);
     if (message === 'Files uploaded successfully') {
       setSelectedFiles([]);
     }

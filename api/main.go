@@ -94,7 +94,7 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
-func upload(c *gin.Context) {
+/*func upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "No file found"})
@@ -113,6 +113,35 @@ func upload(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "File uploaded successfully"})
+}*/
+
+func upload(c *gin.Context) {
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "No files found"})
+		return
+	}
+
+	files := form.File["files"]
+	if len(files) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "No files found"})
+		return
+	}
+
+	uploadFolder := "uploads"
+	if _, err := os.Stat(uploadFolder); os.IsNotExist(err) {
+		os.Mkdir(uploadFolder, os.ModePerm)
+	}
+
+	for _, file := range files {
+		filePath := uploadFolder + "/" + file.Filename
+		if err := c.SaveUploadedFile(file, filePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not save file"})
+			return
+		}
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Files uploaded successfully"})
 }
 
 func corsMiddleware() gin.HandlerFunc {

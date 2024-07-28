@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             if (response.ok) {
                 setAuthToken(data.access_token);
-                alert('Login successful!');
+                //alert('Login successful!');
             } else {
                 alert(`Login failed: ${data.message}`);
             }
