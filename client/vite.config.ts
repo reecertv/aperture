@@ -6,6 +6,7 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: 'file:///home/thutr/repos/aperture/client/dist/',
   plugins: [
     react(),
     legacy()
