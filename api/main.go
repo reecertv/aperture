@@ -3,8 +3,12 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
+	"sort"
+	"strconv"
 	"time"
 )
 
@@ -33,9 +37,21 @@ func main() {
 
 	router.POST("/login", login)
 	router.POST("/upload", authMiddleware(), upload)
+	//router.GET("/file/:index", getFileByIndex)
+	router.GET("/img/:index", authMiddleware(), getFileURLByIndex)
+	router.GET("/imgc", getImageCount)
 
-	router.Run(":80")
+	router.Static("/uploads", "./uploads")
+
+	err := router.Run(":80")
+	if err != nil {
+		return
+	}
 }
+
+/*
+  Router Functions
+*/
 
 func login(c *gin.Context) {
 	var creds Credentials
@@ -68,53 +84,6 @@ func login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"access_token": tokenString})
 }
 
-func authMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
-		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "Missing authorization header"})
-			c.Abort()
-			return
-		}
-
-		tokenString = tokenString[len("Bearer "):]
-
-		claims := &Claims{}
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
-		})
-		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
-			c.Abort()
-			return
-		}
-
-		c.Set("username", claims.Username)
-		c.Next()
-	}
-}
-
-/*func upload(c *gin.Context) {
-	file, err := c.FormFile("file")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "No file found"})
-		return
-	}
-
-	uploadFolder := "uploads"
-	if _, err := os.Stat(uploadFolder); os.IsNotExist(err) {
-		os.Mkdir(uploadFolder, os.ModePerm)
-	}
-
-	filePath := uploadFolder + "/" + file.Filename
-	if err := c.SaveUploadedFile(file, filePath); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not save file"})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "File uploaded successfully"})
-}*/
-
 func upload(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -142,6 +111,107 @@ func upload(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Files uploaded successfully"})
+}
+
+func getFileByIndex(c *gin.Context) {
+	index := c.Param("index")
+	idx, err := strconv.Atoi(index)
+	if err != nil || idx < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid index"})
+		return
+	}
+
+	uploadFolder := "uploads"
+	files, err := ioutil.ReadDir(uploadFolder)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not read upload folder"})
+		return
+	}
+
+	if idx >= len(files) {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid index"})
+		return
+	}
+
+	file := files[idx]
+	filePath := uploadFolder + "/" + file.Name()
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "File not found"})
+		return
+	}
+
+	c.File(filePath)
+}
+
+func getFileURLByIndex(c *gin.Context) {
+	index, err := strconv.Atoi(c.Param("index"))
+	if err != nil || index < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid index"})
+		return
+	}
+
+	uploadFolder := "uploads"
+	files, err := os.ReadDir(uploadFolder)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not read upload folder"})
+		return
+	}
+
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].Name() < files[j].Name()
+	})
+
+	if index >= len(files) {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Index out of range"})
+		return
+	}
+
+	filePath := filepath.Join(uploadFolder, files[index].Name())
+	fileURL := "/" + filePath
+
+	c.JSON(http.StatusOK, gin.H{"url": fileURL})
+}
+
+func getImageCount(c *gin.Context) {
+	uploadFolder := "uploads"
+	files, err := os.ReadDir(uploadFolder)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not read upload folder"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"count": len(files)})
+}
+
+/*
+  Middleware
+*/
+
+func authMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := c.GetHeader("Authorization")
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Missing authorization header"})
+			c.Abort()
+			return
+		}
+
+		tokenString = tokenString[len("Bearer "):]
+
+		claims := &Claims{}
+		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+		if err != nil || !token.Valid {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
+			c.Abort()
+			return
+		}
+
+		c.Set("username", claims.Username)
+		c.Next()
+	}
 }
 
 func corsMiddleware() gin.HandlerFunc {

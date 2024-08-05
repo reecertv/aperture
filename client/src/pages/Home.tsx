@@ -1,11 +1,11 @@
 import { IonButton, IonCol, IonContent, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
 import { add, colorPalette, document, globe } from 'ionicons/icons';
 import './Home.css';
 import { useContext, useRef, useState } from 'react';
 import { uploadFiles } from '../utils/uploadFiles';
 import { AuthContext } from '../providers/AuthProvider';
 import { useHistory } from 'react-router';
+import ContentWall from '../components/ContentWall';
 
 const Home: React.FC = () => {
   const authContext = useContext(AuthContext);
@@ -55,6 +55,8 @@ const Home: React.FC = () => {
             <IonTitle className="ion-justify-content-center" size="large">Aperture</IonTitle>
           </IonToolbar>
         </IonHeader>
+
+        <ContentWall />
 
         <input
           ref={fileInputRef}

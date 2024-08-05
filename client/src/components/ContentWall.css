@@ -1,0 +1,10 @@
+
+img {
+    width: 100%;
+    height: 200px;
+    /* Set the height to a fixed value */
+    object-fit: cover;
+    /* Ensure the image covers the entire area */
+    border-radius: 8px;
+    /* Add some rounded corners if desired */
+}
