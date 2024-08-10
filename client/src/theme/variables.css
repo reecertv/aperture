@@ -1,2 +1,24 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+@font-face {
+    font-family: "Dancing Script";
+    src: url('/fonts/DancingScript-Bold.ttf') format('truetype'),
+        url('/fonts/DancingScript-Medium.ttf') format('truetype'),
+        url('/fonts/DancingScript-Regular.ttf') format('truetype'),
+        url('/fonts/DancingScript-SemiBold.ttf') format('truetype');
+}
+
+.ios {
+    --ion-background-color: #e8e2e0;
+    --ion-background-color-rgb: 232, 226, 224;
+
+    --ion-text-color: #7b6e6a;
+    --ion-text-color-rgb: 123, 110, 106;
+
+    --ion-color-primary: #7b6e6a;
+	--ion-color-primary-rgb: 123,110,106;
+	--ion-color-primary-contrast: #ffffff;
+	--ion-color-primary-contrast-rgb: 255,255,255;
+	--ion-color-primary-shade: #6c615d;
+	--ion-color-primary-tint: #887d79;
+}

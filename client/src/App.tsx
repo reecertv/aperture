@@ -1,4 +1,4 @@
-import { Redirect, Route } from 'react-router-dom';
+import { HashRouter, Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
@@ -35,6 +35,7 @@ import './theme/variables.css';
 import { AuthProvider } from './providers/AuthProvider';
 import Login from './pages/Login';
 import PrivateRoute from './PrivateRoute';
+import ImageScroller from './pages/ImageScroller';
 
 setupIonicReact({
   mode: 'ios'
@@ -42,7 +43,7 @@ setupIonicReact({
 
 const App: React.FC = () => (
   <IonApp>
-    <IonReactRouter>
+    <HashRouter>
       <AuthProvider>
         <IonRouterOutlet>
           <Route exact path="/login">
@@ -52,9 +53,10 @@ const App: React.FC = () => (
             <Redirect to="/login" />
           </Route>
           <PrivateRoute path="/upload" component={Home} exact />
+          <PrivateRoute path="/explore" component={ImageScroller} exact />
         </IonRouterOutlet>
       </AuthProvider>
-    </IonReactRouter>
+    </HashRouter>
   </IonApp>
 );
 

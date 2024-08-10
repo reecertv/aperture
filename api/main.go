@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -43,10 +45,64 @@ func main() {
 
 	router.Static("/uploads", "./uploads")
 
-	err := router.Run(":80")
+	certFile := "server.crt"
+	keyFile := "server.key"
+
+	// Start the server with HTTPS
+	err := router.RunTLS(":443", certFile, keyFile)
+	if err != nil {
+		log.Fatalf("Error starting HTTPS server: %v", err)
+	}
+
+	/*err := router.Run(":80")
 	if err != nil {
 		return
+	}*/
+}
+
+type Config struct {
+	FileCount int `json:"file_count"`
+}
+
+func loadConfig(filename string) (Config, error) {
+	var config Config
+
+	// Open the config file
+	configFile, err := os.Open(filename)
+	if err != nil {
+		return config, err
 	}
+	defer configFile.Close()
+
+	// Read the file contents
+	byteValue, err := ioutil.ReadAll(configFile)
+	if err != nil {
+		return config, err
+	}
+
+	// Unmarshal the JSON into the struct
+	err = json.Unmarshal(byteValue, &config)
+	if err != nil {
+		return config, err
+	}
+
+	return config, nil
+}
+
+func saveConfig(filename string, config Config) error {
+	// Marshal the config struct into JSON
+	byteValue, err := json.MarshalIndent(config, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	// Write the JSON data back to the file
+	err = ioutil.WriteFile(filename, byteValue, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 /*
@@ -102,15 +158,27 @@ func upload(c *gin.Context) {
 		os.Mkdir(uploadFolder, os.ModePerm)
 	}
 
+	// Load the configuration
+	config, err := loadConfig("config.json")
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+
 	for _, file := range files {
-		filePath := uploadFolder + "/" + file.Filename
+		filePath := uploadFolder + "/" + strconv.Itoa(config.FileCount) + ".jpeg"
 		if err := c.SaveUploadedFile(file, filePath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not save file"})
 			return
 		}
+		config.FileCount = config.FileCount + 1
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Files uploaded successfully"})
+
+	err = saveConfig("config.json", config)
+	if err != nil {
+		return
+	}
 }
 
 func getFileByIndex(c *gin.Context) {

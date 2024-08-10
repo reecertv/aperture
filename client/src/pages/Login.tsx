@@ -1,22 +1,29 @@
-import React, { useState, useContext } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonItem, IonLabel, IonButton, IonLoading } from '@ionic/react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonItem, IonLabel, IonButton, IonLoading, IonText } from '@ionic/react';
 import { AuthContext } from '../providers/AuthProvider';
-import { Redirect, useHistory, useLocation } from 'react-router';
+import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
+
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 const Login: React.FC = () => {
+
   const authContext = useContext(AuthContext);
   const history = useHistory();
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
+  const query = useQuery();
+
   if (!authContext) {
     return null; // Or render some error UI
   }
 
-  if (authContext.authToken) {
+  /*if (authContext.authToken) {
     history.push('/upload');
-  }
+  }*/
 
   const { login } = authContext;
 
@@ -24,16 +31,34 @@ const Login: React.FC = () => {
     setLoading(true);
     await login(username, password);
     setLoading(false);
-    //history.push('/upload');
+    history.push('/upload');
   };
 
-  const queryParams = new URLSearchParams(window.location.search);
-  const paramU = queryParams.get('u');
-  const paramP = queryParams.get('p');
+  const hasRun = useRef(false);
 
-  if (paramU != null && paramP != null) {
-    login(paramU, paramP);
-  }
+  useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    const u = query.get('u');
+    const p = query.get('p');
+
+    const funnel = async () => {
+      setUsername(u as string);
+      setPassword(p as string);
+      setLoading(true);
+      await login(u as string, p as string);
+      setLoading(false);
+      history.push('/upload');
+    }
+
+    if (u && p) {
+      funnel();
+    }
+  });
+
+
+
 
   return (
     <IonPage>
@@ -45,7 +70,7 @@ const Login: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle className="ion-justify-content-center" size="large">Aperture</IonTitle>
+            <IonTitle className="ion-justify-content-center" size="large">Login</IonTitle>
           </IonToolbar>
         </IonHeader>
 
@@ -68,10 +93,11 @@ const Login: React.FC = () => {
           />
         </IonItem>
         <IonButton className='ion-margin' expand="block" onClick={handleLogin}>Anmelden</IonButton>
-        <IonLoading isOpen={loading} message={'Please wait...'} />
+        <IonLoading isOpen={loading} message={'Bitte warten...'} />
       </IonContent>
     </IonPage>
   );
 };
 
 export default Login;
+

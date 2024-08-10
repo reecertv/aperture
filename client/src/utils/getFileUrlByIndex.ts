@@ -26,7 +26,7 @@
 
 import axios from 'axios';
 
-const BASE_URL = 'http://vps.thut.tech';
+const BASE_URL = 'https://vps.thut.tech';
 
 export const getFileUrlByIndex = async (index: number, token: string) => {
     try {

@@ -1,6 +1,7 @@
-import { IonButton, IonCol, IonContent, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import { add, colorPalette, document, globe } from 'ionicons/icons';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonRow, IonText, IonTitle, IonToolbar, useIonAlert } from '@ionic/react';
+import { add, colorPalette, document, globe, playOutline } from 'ionicons/icons';
 import './Home.css';
+import '../styles/BottomButtons.css';
 import { useContext, useRef, useState } from 'react';
 import { uploadFiles } from '../utils/uploadFiles';
 import { AuthContext } from '../providers/AuthProvider';
@@ -12,12 +13,14 @@ const Home: React.FC = () => {
   const history = useHistory();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [presentAlert] = useIonAlert();
 
   if (!authContext) {
-    return null; // Or render some error UI
+    return (404); // Or render some error UI
   }
 
   if (authContext.authToken == null) {
+    console.log("AuthToken is null")
     history.push('/login');
     return null;
   }
@@ -44,17 +47,46 @@ const Home: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Aperture</IonTitle>
-        </IonToolbar>
-      </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle className="ion-justify-content-center" size="large">Aperture</IonTitle>
-          </IonToolbar>
-        </IonHeader>
+        <IonText class="ion-margin ion-text-center">
+          <h1 className='ion-margin'>Wir freuen uns, wenn ihr eure Erinnerungen mit uns teilt!</h1>
+        </IonText>
+
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle class="ion-text-center">Anleitung</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <ul>
+              <li>Auf "Hinzufügen" klicken</li>
+              <li>Bilder auswählen</li>
+              <li>Auswahl bestätigen</li>
+            </ul>
+          </IonCardContent>
+        </IonCard>
+
+        {selectedFiles.length > 0 && (
+
+          <IonCard>
+            <IonCardHeader>
+              <IonCardTitle class="ion-text-center">Hochladen</IonCardTitle>
+            </IonCardHeader>
+
+            <IonCardContent>
+              <IonList lines="full">
+                {selectedFiles.map((file, index) => (
+                  <IonItem key={index}>
+                    <IonLabel>{file.name}</IonLabel>
+                  </IonItem>
+                ))}
+              </IonList>
+              <hr />
+              <IonButton expand="block" onClick={handleUploadButtonClick}>
+                Bestätigen
+              </IonButton>
+            </IonCardContent>
+          </IonCard>
+        )}
 
         <ContentWall />
 
@@ -67,29 +99,21 @@ const Home: React.FC = () => {
           onChange={handleFileChange}
         />
 
-        {selectedFiles.length > 0 && (
-          <IonList lines='none'>
-            {selectedFiles.map((file, index) => (
-              <IonItem key={index}>
-                <IonLabel>{file.name}</IonLabel>
-              </IonItem>
-            ))}
-          </IonList>
-        )}
-
         <div className="button-container">
-          {selectedFiles.length > 0 && (
-            <IonButton expand="block" onClick={handleUploadButtonClick}>
-              Bestaetigen
-            </IonButton>
-          ) || (
-              <IonButton expand="block" onClick={handleAddButtonClick}>
-                Hinzufuegen
+          {selectedFiles.length == 0 && (
+            <>
+              <IonButton className='flexible-item' expand="block" onClick={handleAddButtonClick}>
+                Hinzufügen
               </IonButton>
-            )}
 
+              {/*<IonButton className='fixed-size-item' expand="block" onClick={() => {
+                history.push('/explore?src=https://sample-videos.com/img/Sample-jpg-image-50kb.jpg');
+              }}>
+                <IonIcon icon={playOutline} />
+              </IonButton>*/}
+            </>
+          )}
         </div>
-
       </IonContent>
     </IonPage>
   );

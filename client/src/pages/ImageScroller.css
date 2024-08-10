@@ -1,0 +1,26 @@
+/* Home.css */
+.img-swiper {
+    height: 100vh;
+}
+
+.img-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow-x: scroll;
+    /* Prevent touch events from interfering with swipe */
+}
+
+.video-player {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensure swipe gestures are detected */
+}
+
+.image-displayer::part(image) {
+    width: auto;
+    height: 100vh;
+    object-fit: cover;
+}
