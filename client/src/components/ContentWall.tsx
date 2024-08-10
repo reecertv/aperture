@@ -1,28 +1,13 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import {
-  IonContent,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonList,
-  IonItem,
-  IonAvatar,
-  IonLabel,
   IonGrid,
   IonRow,
   IonCol,
-  IonImg,
-  IonCard,
-  IonCardContent,
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonButton,
 } from '@ionic/react';
-import { getFileByIndex } from '../utils/getFileByIndex';
 import { AuthContext } from '../providers/AuthProvider';
-import { getFileUrlByIndex, getImageCount } from '../utils/getFileUrlByIndex';
+import { getImageCount } from '../utils/getFileUrlByIndex';
 import './ContentWall.css'
 import ImageWithPlaceholder from './ImageWithPlaceholder';
 

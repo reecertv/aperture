@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonIcon, IonImg, IonModal, IonSkeletonText, IonTitle, IonToolbar } from '@ionic/react';
+import { IonCard, IonImg } from '@ionic/react';
 import './ImageWithPlaceholder.css'
-import ImageMagnifier from './ImageMaginfier';
-import { closeOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 
 interface ImageWithPlaceholderProps {

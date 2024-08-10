@@ -1,5 +1,4 @@
-import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonRow, IonText, IonTitle, IonToolbar, useIonAlert } from '@ionic/react';
-import { add, colorPalette, document, globe, playOutline } from 'ionicons/icons';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonItem, IonLabel, IonList, IonPage, IonText, useIonAlert } from '@ionic/react';
 import './Home.css';
 import '../styles/BottomButtons.css';
 import { useContext, useRef, useState } from 'react';

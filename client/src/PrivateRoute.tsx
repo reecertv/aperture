@@ -3,32 +3,32 @@ import { Redirect, Route, RouteProps } from 'react-router-dom';
 import { AuthContext } from './providers/AuthProvider';
 
 interface PrivateRouteProps extends RouteProps {
-    component: React.ComponentType<any>;
+  component: React.ComponentType<any>;
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ component: Component, ...rest }) => {
-    const authContext = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
 
-    if (!authContext) {
-        return null; // Or render some error UI
-    }
+  if (!authContext) {
+    return null; // Or render some error UI
+  }
 
-    const { authToken } = authContext;
+  const { authToken } = authContext;
 
-    console.log(authToken);
+  console.log(authToken);
 
-    return (
-        <Route
-            {...rest}
-            render={props =>
-                authToken ? (
-                    <Component {...props} />
-                ) : (
-                    <Redirect to="/login" />
-                )
-            }
-        />
-    );
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        authToken ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/login" />
+        )
+      }
+    />
+  );
 };
 
 export default PrivateRoute;

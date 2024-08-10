@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonItem, IonLabel, IonButton, IonLoading, IonText } from '@ionic/react';
 import { AuthContext } from '../providers/AuthProvider';
-import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);

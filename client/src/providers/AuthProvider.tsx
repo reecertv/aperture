@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { body } from 'ionicons/icons';
 import React, { createContext, useState, ReactNode } from 'react';
 
 interface AuthContextProps {

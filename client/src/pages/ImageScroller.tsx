@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Scrollbar, A11y, Mousewheel } from 'swiper/modules';
+import { Pagination, Mousewheel } from 'swiper/modules';
 
 import './ImageScroller.css';
 import '../styles/BottomButtons.css';
@@ -17,7 +17,7 @@ import '@ionic/react/css/ionic-swiper.css';
 import { IonButton, IonContent, IonIcon, IonImg, IonPage } from '@ionic/react';
 import { useHistory, useLocation } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
-import { closeOutline, playOutline } from 'ionicons/icons';
+import { closeOutline } from 'ionicons/icons';
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);

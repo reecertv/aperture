@@ -26,6 +26,10 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+type Config struct {
+	FileCount int `json:"file_count"`
+}
+
 var users = map[string]string{
 	"guest": "1234",
 }
@@ -58,10 +62,6 @@ func main() {
 	if err != nil {
 		return
 	}*/
-}
-
-type Config struct {
-	FileCount int `json:"file_count"`
 }
 
 func loadConfig(filename string) (Config, error) {
@@ -179,37 +179,6 @@ func upload(c *gin.Context) {
 	if err != nil {
 		return
 	}
-}
-
-func getFileByIndex(c *gin.Context) {
-	index := c.Param("index")
-	idx, err := strconv.Atoi(index)
-	if err != nil || idx < 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid index"})
-		return
-	}
-
-	uploadFolder := "uploads"
-	files, err := ioutil.ReadDir(uploadFolder)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not read upload folder"})
-		return
-	}
-
-	if idx >= len(files) {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid index"})
-		return
-	}
-
-	file := files[idx]
-	filePath := uploadFolder + "/" + file.Name()
-
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		c.JSON(http.StatusNotFound, gin.H{"message": "File not found"})
-		return
-	}
-
-	c.File(filePath)
 }
 
 func getFileURLByIndex(c *gin.Context) {

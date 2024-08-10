@@ -1,5 +1,3 @@
-import imageCompression from "browser-image-compression";
-
 export const uploadFiles = async (files: File[], token: string): Promise<string> => {
     const formData = new FormData();
     files.forEach(async (file) => {
